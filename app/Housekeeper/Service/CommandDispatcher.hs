@@ -4,7 +4,7 @@ import Housekeeper.Data.Client (Client (..))
 import Housekeeper.Data.Command (Command (..), topic)
 import Housekeeper.Data.Event (Event (..), Payload (..))
 import Housekeeper.Effects.ClientRepo (MonadClientRepoFind (..), MonadClientRepoSave (..))
-import Housekeeper.Effects.EventStore (EventStore (..))
+import Housekeeper.Effects.EventStore (MonadEventStore (..))
 import Housekeeper.Effects.Time (MonadTime (..))
 import Housekeeper.Types (Topic)
 
@@ -44,7 +44,7 @@ dispatchCommand e@(UpdateClientName _ _) = execClientCommand e
 dispatchCommand e@(DeleteClient _) = execClientCommand e
 dispatchCommand _ = pure []
 
-processCommand :: (MonadClientRepoFind m, MonadClientRepoSave m, MonadTime m, EventStore m) => Command -> m ()
+processCommand :: (MonadClientRepoFind m, MonadClientRepoSave m, MonadTime m, MonadEventStore m) => Command -> m ()
 processCommand command = do
   events <- dispatchCommand command
   mapM_ appendEvent events

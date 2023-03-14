@@ -1,55 +1,38 @@
-module Housekeeper.Effects.ClientRepo where
+{- |
+Module: ClientRepo
+Description: Effects for a 'Client' store.
+Maintainer: Marco Schneider <marco.schneider@posteo.de>
 
-import Control.Concurrent.MonadIO (MonadIO, liftIO)
-import Control.Monad.Reader (MonadReader)
-import Database.PostgreSQL.Simple qualified as PSQL
-import Housekeeper.App.Env (Env (..), withDbConn)
-import Housekeeper.App.Monad (AppM)
+This module provides effects (as Typeclasses) for interacting with a 'Client' store.
+
+- Reading a 'Client' from the store: 'MonadClientRepoFind'
+- Reading all 'Client's from the store: 'MonadClientRepoFindAll'
+- Writing a 'Client's to the store: 'MonadClientRepoSave'
+-}
+module Housekeeper.Effects.ClientRepo (
+    MonadClientRepoFind (..),
+    MonadClientRepoFindAll (..),
+    MonadClientRepoSave (..),
+    saveThenFind,
+) where
+
 import Housekeeper.Data.Client (Client (..))
 import Housekeeper.Types (Topic)
 
--- Finding clients
 class Monad m => MonadClientRepoFind m where
-  findClient :: Topic -> m (Maybe Client)
-
-instance MonadClientRepoFind AppM where
-  findClient = findClientImpl
-
-findClientImpl :: (MonadIO m, MonadReader Env m) => Topic -> m (Maybe Client)
-findClientImpl topic =
-  withDbConn
-    ( \conn -> do
-        clients <- liftIO $ PSQL.query conn "SELECT id, name FROM client WHERE id = ?" $ PSQL.Only topic
-        case clients of
-          [] -> return Nothing
-          _ -> return $ Just (head clients)
-    )
-
--- Saving clients
-class Monad m => MonadClientRepoSave m where
-  saveClient :: Client -> m ()
-
-instance MonadClientRepoSave AppM where
-  saveClient = saveClientImpl
-
-saveClientImpl :: (MonadIO m, MonadReader Env m) => Client -> m ()
-saveClientImpl (Client topic name) =
-  withDbConn
-    ( \conn -> do
-        -- Discard the result
-        _ <- liftIO $ PSQL.execute conn "INSERT INTO client (id, name) VALUES (?, ?)" (topic, name)
-        return ()
-    )
+    -- | Find a single client in the repo by it's id.
+    findClient :: Topic -> m (Maybe Client)
 
 class Monad m => MonadClientRepoFindAll m where
-  findAllClients :: m [Client]
+    -- | Find all clients in the repo.
+    findAllClients :: m [Client]
 
-instance MonadClientRepoFindAll AppM where
-  findAllClients = findAllClientsImpl
+class Monad m => MonadClientRepoSave m where
+    -- | Save a client to the repo.
+    saveClient :: Client -> m ()
 
-findAllClientsImpl :: (MonadIO m, MonadReader Env m) => m [Client]
-findAllClientsImpl =
-  withDbConn
-    ( \conn -> do
-        liftIO $ PSQL.query_ conn "SELECT id, name FROM client"
-    )
+-- | Save a 'Client' to the store, then retrieve it.
+saveThenFind :: (MonadClientRepoFind m, MonadClientRepoSave m) => Client -> m (Maybe Client)
+saveThenFind client@(Client topic _) = do
+    saveClient client
+    findClient topic

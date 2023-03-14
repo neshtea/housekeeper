@@ -74,6 +74,7 @@ executable housekeeper
                     , transformers
                     , monadIO
                     , mtl
+                    , hslogger
                     , aeson
                     , opaleye
                     , text
@@ -86,15 +87,16 @@ executable housekeeper
 
     other-modules: Housekeeper.App.Env
                  , Housekeeper.App.Monad
+                 , Housekeeper.App.Handler
                  , Housekeeper.Data.Client
+                 , Housekeeper.Data.Command
+                 , Housekeeper.Data.Event
                  , Housekeeper.Effects.ClientRepo
                  , Housekeeper.Effects.Id
                  , Housekeeper.Effects.Log
                  , Housekeeper.Effects.Time
                  , Housekeeper.Effects.EventStore
                  , Housekeeper.Types
-                 , Housekeeper.Data.Command
-                 , Housekeeper.Data.Event
                  , Housekeeper.Service.CommandDispatcher
 
     -- Base language which the package is written in.

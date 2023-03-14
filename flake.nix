@@ -18,6 +18,7 @@
             haskell-language-server
             postgresql
             ormolu
+            haskellPackages.fourmolu
             zlib
           ];
         };
