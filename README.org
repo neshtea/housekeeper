@@ -1,0 +1,7 @@
+* Turn into tests
+#+begin_src shell
+curl -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"command":"create-client","id":"def7361d-d916-4945-953c-e1ff9f290835","name":"the second client"}' localhost:8080/client/exec
+curl -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"command":"update-client-name","id":"dff7361d-d916-4945-953c-e1ff9f290835","name":"new name"}' localhost:8080/client/exec
+curl -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"command":"archive-client","id":"dff7361d-d916-4945-953c-e1ff9f290835"}' localhost:8080/client/exec
+curl -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"command":"restore-client","id":"dff7361d-d916-4945-953c-e1ff9f290835"}' localhost:8080/client/exec
+#+end_src

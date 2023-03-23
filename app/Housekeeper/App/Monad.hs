@@ -11,6 +11,7 @@ import Control.Monad.Reader (MonadReader)
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
 import Data.Aeson (FromJSON, ToJSON, decode, encode)
 import Data.Time.Clock (UTCTime, getCurrentTime)
+import Data.UUID (UUID)
 import Data.UUID.V4 qualified as V4
 import Database.PostgreSQL.Simple qualified as PSQL
 import Database.PostgreSQL.Simple.FromRow (FromRow (..), field)
@@ -20,7 +21,6 @@ import Housekeeper.Capability.Id (MonadId (..))
 import Housekeeper.Capability.Logger (LogLevel (..), LogMessage (..), MonadLog (..))
 import Housekeeper.Capability.Time (MonadTime (..))
 import Housekeeper.Context.ClientManager (Client (..), MonadClientRepo (..))
-import Housekeeper.Types (Topic)
 import System.Log.Logger qualified as Log
 
 -- | Main application monad.
@@ -64,7 +64,7 @@ findAllClientsImpl =
         liftIO $ PSQL.query_ conn "SELECT id, name, archived FROM clients"
     )
 
-findClientImpl :: Topic -> AppM (Maybe Client)
+findClientImpl :: UUID -> AppM (Maybe Client)
 findClientImpl topic =
   withDbConn
     ( \conn -> do

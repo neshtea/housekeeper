@@ -74,7 +74,7 @@ handleGetClients = findAll
 handleGetClient :: UUID -> AppM (Maybe Client)
 handleGetClient = find
 
--- | Natural transformation that makes a 'Handler' out of our 'AppM' monad.
+-- | Natural transformation that makes a servant 'Handler' out of our 'AppM' monad.
 nt :: Env -> AppM a -> Handler a
 nt env x = liftIO $ runAppM x env
 

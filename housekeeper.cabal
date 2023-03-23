@@ -90,16 +90,10 @@ executable housekeeper
                  , Housekeeper.App.Monad
                  , Housekeeper.App.Handler
                  , Housekeeper.Context.ClientManager
-                 , Housekeeper.Data.Client
-                 , Housekeeper.Data.Command
-                 , Housekeeper.Data.Event
-                 , Housekeeper.Data.CommandHandler
-                 , Housekeeper.Capability.ClientRepo
                  , Housekeeper.Capability.Id
                  , Housekeeper.Capability.Logger
                  , Housekeeper.Capability.Time
                  , Housekeeper.Capability.EventStore
-                 , Housekeeper.Types
     -- Base language which the package is written in.
     default-language: GHC2021
 
