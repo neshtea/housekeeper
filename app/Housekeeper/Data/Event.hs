@@ -15,7 +15,7 @@ module Housekeeper.Data.Event where
 
 import Data.Aeson (FromJSON (..), ToJSON (..), decode, object, withObject, (.:), (.=))
 import Data.Text (Text)
-import Data.Time.Clock (UTCTime)
+import Data.Time.Clock (DiffTime, UTCTime)
 import Data.UUID (UUID)
 import Database.PostgreSQL.Simple.FromRow (FromRow (..), field)
 import GHC.Generics
@@ -31,6 +31,14 @@ data Payload
     = ClientCreated Text
     | ClientNameUpdated Text
     | ClientDeleted
+    | -- | A scheduled appointment with a client.
+      AppointmentScheduled
+        Topic
+        -- ^ the client's id
+        UTCTime
+        -- ^ timestamp of the scheduled appointment
+        DiffTime
+        -- ^ the duration of the appointment
     | OtherEvent
     deriving (Show, Generic)
 
@@ -68,6 +76,8 @@ data Event = Event
     -- ^ The domain 'Payload' of the event.
     }
     deriving (Show, Generic)
+
+instance ToJSON Event
 
 instance FromRow Event where
     fromRow = do

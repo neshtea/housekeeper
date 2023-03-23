@@ -1,52 +1,84 @@
 {-# LANGUAGE DataKinds #-}
 
-{- |
-Description: Running the monad in the context of a servant handler.
-Maintainer: Marco Schneider <marco.schneider@posteo.de>
-
-This module provides facilities (namely, the 'app' function) to run
-the application as a servant handler.  The 'app' can be run as a
-server via WAI.
--}
+-- |
+-- Description: Running the monad in the context of a servant handler.
+-- Maintainer: Marco Schneider <marco.schneider@posteo.de>
+--
+-- This module provides facilities (namely, the 'app' function) to run
+-- the application as a servant handler.  The 'app' can be run as a
+-- server via WAI.
 module Housekeeper.App.Handler (app) where
 
 import Control.Concurrent.MonadIO (liftIO)
+import Data.Aeson (FromJSON (..), withObject, (.:))
+import Data.Text (Text)
 import Data.UUID (UUID)
 import Housekeeper.App.Env (Env (..))
 import Housekeeper.App.Monad (AppM, runAppM)
-import Housekeeper.Data.Client (Client (..))
-
-import Housekeeper.Effects.ClientRepo (MonadClientRepoFind (..), MonadClientRepoFindAll (..), MonadClientRepoSave (..))
+import Housekeeper.Context.ClientManager
+  ( Client,
+    DomainCommand (..),
+    MonadClientRepo (..),
+    processCommand,
+  )
 import Servant
-
-type PostClient = ReqBody '[JSON] Client :> PostCreated '[JSON] Client
-
-type GetClient = Capture "id" UUID :> Get '[JSON] (Maybe Client)
 
 type GetClients = Get '[JSON] [Client]
 
-type ClientAPI = "clients" :> GetClients :<|> "client" :> (GetClient :<|> PostClient)
+type GetClient = Get '[JSON] (Maybe Client)
+
+newtype HandlerCommand = HandlerCommand {unHandlerCommand :: DomainCommand}
+
+instance FromJSON HandlerCommand where
+  parseJSON = withObject "HandlerCommand" $ \obj -> do
+    (command :: Text) <- obj .: "command"
+    (domainCommand :: DomainCommand) <-
+      case command of
+        "create-client" -> CreateClient <$> obj .: "id" <*> obj .: "name"
+        "update-client-name" -> UpdateClientName <$> obj .: "id" <*> obj .: "name"
+        "archive-client" -> ArchiveClient <$> obj .: "id"
+        "restore-client" -> RestoreClient <$> obj .: "id"
+        _ -> undefined
+    pure $ HandlerCommand domainCommand
+
+type PostCommand = ReqBody '[JSON] HandlerCommand :> Post '[JSON] (Either String (Maybe Client))
+
+type ClientAPI =
+  ("clients" :> GetClients)
+    :<|> ( "client"
+             :> ( Capture "id" UUID :> GetClient
+                    :<|> ("exec" :> PostCommand)
+                )
+         )
+
+server :: ServerT ClientAPI AppM
+server =
+  handleGetClients
+    :<|> ( handleGetClient
+             :<|> handlePostCommand
+         )
+
+handlePostCommand :: HandlerCommand -> AppM (Either String (Maybe Client))
+handlePostCommand cmd = do
+  res <- processCommand (unHandlerCommand cmd)
+  case res of
+    Left domainError -> pure $ Left $ show domainError
+    Right maybeClient -> pure $ Right maybeClient
 
 api :: Proxy ClientAPI
 api = Proxy
 
-handleGetClients :: (MonadClientRepoFindAll m) => m [Client]
-handleGetClients = findAllClients
+handleGetClients :: AppM [Client]
+handleGetClients = findAll
 
-handleGetClient :: (MonadClientRepoFind m) => UUID -> m (Maybe Client)
-handleGetClient = findClient
+handleGetClient :: UUID -> AppM (Maybe Client)
+handleGetClient = find
 
-handlePostClient :: (MonadClientRepoSave m) => Client -> m Client
-handlePostClient client = saveClient client >> return client
-
-server :: ServerT ClientAPI AppM
-server = handleGetClients :<|> handleGetClient :<|> handlePostClient
-
+-- | Natural transformation that makes a 'Handler' out of our 'AppM' monad.
 nt :: Env -> AppM a -> Handler a
 nt env x = liftIO $ runAppM x env
 
-{- | Given an 'Env', provide the application as an 'Application' that via
- 'Network.Wai.Handler.Warp.run'.
--}
+-- | Given an 'Env', provide the application as an 'Application' that via
+-- 'Network.Wai.Handler.Warp.run'.
 app :: Env -> Application
 app env = serve api $ hoistServer api (nt env) server

@@ -76,29 +76,30 @@ executable housekeeper
                     , mtl
                     , hslogger
                     , aeson
-                    , opaleye
                     , text
                     , time
                     , servant
                     , servant-server
                     , warp
+                    , wai-extra
+                    , feed
     -- Directories containing source files.
     hs-source-dirs:   app
 
     other-modules: Housekeeper.App.Env
                  , Housekeeper.App.Monad
                  , Housekeeper.App.Handler
+                 , Housekeeper.Context.ClientManager
                  , Housekeeper.Data.Client
                  , Housekeeper.Data.Command
                  , Housekeeper.Data.Event
-                 , Housekeeper.Effects.ClientRepo
-                 , Housekeeper.Effects.Id
-                 , Housekeeper.Effects.Log
-                 , Housekeeper.Effects.Time
-                 , Housekeeper.Effects.EventStore
+                 , Housekeeper.Data.CommandHandler
+                 , Housekeeper.Capability.ClientRepo
+                 , Housekeeper.Capability.Id
+                 , Housekeeper.Capability.Logger
+                 , Housekeeper.Capability.Time
+                 , Housekeeper.Capability.EventStore
                  , Housekeeper.Types
-                 , Housekeeper.Service.CommandDispatcher
-
     -- Base language which the package is written in.
     default-language: GHC2021
 
