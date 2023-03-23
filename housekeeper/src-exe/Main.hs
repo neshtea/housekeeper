@@ -1,5 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-
 module Main where
 
 import Housekeeper.Main qualified as Housekeeper

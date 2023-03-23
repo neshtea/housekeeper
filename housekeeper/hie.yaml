@@ -1,0 +1,7 @@
+cradle:
+  cabal:
+    - path: "./src-exe"
+      component: "exe:housekeeper"
+    - path: "./src-lib"
+      component: "lib:housekeeper"
+

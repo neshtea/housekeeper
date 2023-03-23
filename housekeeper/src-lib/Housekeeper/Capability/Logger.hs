@@ -1,7 +1,3 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE OverloadedStrings #-}
-
--- |
 -- Description: Logging capability.
 -- Maintainer: Marco Schneider <marco.schneider@posteo.de>
 --
@@ -38,7 +34,8 @@ data LogLevel
     Warning
   | -- | General Errors
     Error
-  deriving (Show, Generic, ToJSON)
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON)
 
 data LogMessage = LogMessage
   { logMessageLevel :: LogLevel,

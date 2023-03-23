@@ -18,7 +18,7 @@
         packageName = "housekeeper";
       in {
         packages.${packageName} =
-          haskellPackages.callCabal2nix packageName self rec { };
+          haskellPackages.callCabal2nix packageName ./housekeeper rec { };
 
         defaultPackage = self.packages.${system}.${packageName};
 

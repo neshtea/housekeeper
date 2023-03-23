@@ -1,13 +1,11 @@
 cabal-version:      3.0
 name:               housekeeper
-
+description:        Playing around with Haskell again.
 version:            0.1.0.0
 license:            GPL-3.0-only
-license-file:       LICENSE
 author:             Marco Schneider
 maintainer:         marco.schneider@posteo.de
 build-type:         Simple
-extra-doc-files:    CHANGELOG.md
 
 common warnings
     ghc-options: -Wall
@@ -23,7 +21,6 @@ executable housekeeper
 library
     import:           warnings
     build-depends:    base ^>=4.16.4.0
-                    , polysemy
                     , uuid
                     , postgresql-simple
                     , transformers
@@ -37,8 +34,7 @@ library
                     , servant-server
                     , warp
                     , wai-extra
-                    , feed
-    hs-source-dirs:   src-lib
+    hs-source-dirs:  src-lib
     exposed-modules: Housekeeper.Main
                    , Housekeeper.App.Env
                    , Housekeeper.App.Monad
@@ -50,4 +46,6 @@ library
                    , Housekeeper.Capability.EventStore
     default-language: GHC2021
     default-extensions: OverloadedStrings
+                      , DerivingStrategies
+                      , DeriveAnyClass
 
