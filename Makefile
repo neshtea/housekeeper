@@ -2,7 +2,7 @@ doc:
 	cabal haddock --haddock-executables
 
 build:
-	cabal build
+	nix build .#housekeeper
 
 server:
 	cabal run
