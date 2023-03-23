@@ -1,6 +1,4 @@
-{-# LANGUAGE DataKinds #-}
-
-module Main where
+module Housekeeper.Main where
 
 import Housekeeper.App.Env (mkEnv)
 import Housekeeper.App.Handler (app)
@@ -9,6 +7,6 @@ import Network.Wai.Middleware.RequestLogger (logStdoutDev)
 
 main :: IO ()
 main = do
-    env <- mkEnv
-    let runApp = run 8080 $ logStdoutDev $ app env
-    runApp
+  env <- mkEnv
+  let runApp = run 8080 $ logStdoutDev $ app env
+  runApp
