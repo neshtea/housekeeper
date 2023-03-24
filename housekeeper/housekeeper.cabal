@@ -9,6 +9,7 @@ build-type:         Simple
 
 common warnings
     ghc-options: -Wall
+    default-language: GHC2021
 
 executable housekeeper
     import:           warnings
@@ -16,7 +17,6 @@ executable housekeeper
     build-depends:    base
                     , housekeeper
     hs-source-dirs:   src-exe
-    default-language: GHC2021
 
 library
     import:           warnings
@@ -44,8 +44,22 @@ library
                    , Housekeeper.Capability.Logger
                    , Housekeeper.Capability.Time
                    , Housekeeper.Capability.EventStore
-    default-language: GHC2021
     default-extensions: OverloadedStrings
                       , DerivingStrategies
                       , DeriveAnyClass
 
+test-suite housekeeper-test
+   import: warnings
+   type: exitcode-stdio-1.0
+   main-is: Spec.hs
+   hs-source-dirs: test
+   ghc-options: -rtsopts -with-rtsopts=-N -threaded
+   build-depends: base
+                , housekeeper
+                , hspec
+                , time
+                , mtl
+                , uuid
+                , text
+   build-tool-depends: hspec-discover:hspec-discover
+   other-modules: Housekeeper.Context.ClientManagerSpec

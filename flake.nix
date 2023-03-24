@@ -35,6 +35,9 @@
           ];
 
           inputsFrom = builtins.attrValues self.packages.${system};
+
+          HSPEC_COLOR = "yes";
+          HSPEC_FORMAT = "progress";
         };
       });
 }

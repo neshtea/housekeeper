@@ -1,11 +1,13 @@
 module Housekeeper.Context.ClientManager
   ( Client (..),
+    DomainEvent (..),
     DomainCommand (..),
     DomainError (..),
     MonadClientRepo (..),
     ClientResult,
     -- create,
     processCommand,
+    exec,
     -- updateName,
     -- archive,
     -- restore,
@@ -78,6 +80,7 @@ data DomainEvent
   | ClientNameUpdated Text
   | ClientArchived
   | ClientRestored
+  deriving stock (Show, Eq)
 
 instance ToJSON DomainEvent where
   toJSON (ClientCreated name) =
@@ -118,7 +121,7 @@ data DomainError
   | -- | Signals that a user attempted to restore a 'Client' that is not archived.
     ClientNotArchived UUID
                       -- ^ The id of the 'Client' that was attempted to be restored.
-  deriving (Show)
+  deriving stock (Show, Eq)
 
 exec ::
   MonadTime m =>
