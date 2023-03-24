@@ -1,15 +1,14 @@
-{-# LANGUAGE DeriveAnyClass #-}
-
 module Housekeeper.Context.ClientManager
   ( Client (..),
     DomainCommand (..),
     DomainError (..),
     MonadClientRepo (..),
-    create,
+    ClientResult,
+    -- create,
     processCommand,
-    updateName,
-    archive,
-    restore,
+    -- updateName,
+    -- archive,
+    -- restore,
   )
 where
 
@@ -30,7 +29,8 @@ data Client = Client
     -- | 'Client's may be archived, this tracks that state.
     clientArchived :: Bool
   }
-  deriving (Show, Generic, ToJSON, FromJSON)
+  deriving (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 instance FromRow Client where
   fromRow = Client <$> field <*> field <*> field
@@ -209,47 +209,48 @@ processCommand cmd = do
 
 -- Domain functions
 
--- | Create a new client and store it.  Either returns a 'DomainError'
--- or an optional 'Client'.
-create ::
-  ( MonadTime m,
-    MonadClientRepo m,
-    MonadEventStore m
-  ) =>
-  UUID ->
-  Text ->
-  ClientResult m
--- FIXME: We don't want to return a Maybe Client.
-create uid = processCommand . CreateClient uid
+-- NOTE I would like this to be the interface to this module but I
+-- can't get it right in Handler.hs, so im using 'DomainCommand's and
+-- 'processCommand' as the interface.  Let's see what I do when the
+-- corona haze is over and I can think straight.
 
--- | Update the name of the 'Client' with the given id to a new name
--- and store it.
-updateName ::
-  ( MonadTime m,
-    MonadClientRepo m,
-    MonadEventStore m
-  ) =>
-  UUID ->
-  Text ->
-  ClientResult m
-updateName uid = processCommand . UpdateClientName uid
+-- create ::
+--   ( MonadTime m,
+--     MonadClientRepo m,
+--     MonadEventStore m
+--   ) =>
+--   UUID ->
+--   Text ->
+--   ClientResult m
+-- -- FIXME: We don't want to return a Maybe Client.
+-- create uid = processCommand . CreateClient uid
 
--- | Archive the 'Client' with the given id.
-archive ::
-  ( MonadTime m,
-    MonadClientRepo m,
-    MonadEventStore m
-  ) =>
-  UUID ->
-  ClientResult m
-archive = processCommand . ArchiveClient
+-- updateName ::
+--   ( MonadTime m,
+--     MonadClientRepo m,
+--     MonadEventStore m
+--   ) =>
+--   UUID ->
+--   Text ->
+--   ClientResult m
+-- updateName uid = processCommand . UpdateClientName uid
 
--- | Restore the 'Client' with the given id.
-restore ::
-  ( MonadTime m,
-    MonadClientRepo m,
-    MonadEventStore m
-  ) =>
-  UUID ->
-  ClientResult m
-restore = processCommand . RestoreClient
+-- -- | Archive the 'Client' with the given id.
+-- archive ::
+--   ( MonadTime m,
+--     MonadClientRepo m,
+--     MonadEventStore m
+--   ) =>
+--   UUID ->
+--   ClientResult m
+-- archive = processCommand . ArchiveClient
+
+-- -- | Restore the 'Client' with the given id.
+-- restore ::
+--   ( MonadTime m,
+--     MonadClientRepo m,
+--     MonadEventStore m
+--   ) =>
+--   UUID ->
+--   ClientResult m
+-- restore = processCommand . RestoreClient
