@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveAnyClass #-}
+
 module Housekeeper.Context.ClientManager
   ( Client (..),
     DomainEvent (..),
@@ -31,8 +33,11 @@ data Client = Client
     -- | 'Client's may be archived, this tracks that state.
     clientArchived :: Bool
   }
-  deriving (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving (Show, Generic, FromJSON)
+
+instance ToJSON Client where
+  toJSON (Client cid cname carchived) =
+    object ["id" .= show cid, "name" .= cname, "isArchived" .= carchived]
 
 instance FromRow Client where
   fromRow = Client <$> field <*> field <*> field
@@ -80,7 +85,7 @@ data DomainEvent
   | ClientNameUpdated Text
   | ClientArchived
   | ClientRestored
-  deriving stock (Show, Eq)
+  deriving (Show, Eq)
 
 instance ToJSON DomainEvent where
   toJSON (ClientCreated name) =
@@ -121,7 +126,7 @@ data DomainError
   | -- | Signals that a user attempted to restore a 'Client' that is not archived.
     ClientNotArchived UUID
                       -- ^ The id of the 'Client' that was attempted to be restored.
-  deriving stock (Show, Eq)
+  deriving (Show, Eq)
 
 exec ::
   MonadTime m =>

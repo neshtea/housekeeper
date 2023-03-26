@@ -5,3 +5,6 @@ curl -X POST -H "accept: application/json" -H "Content-Type: application/json" -
 curl -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"command":"archive-client","id":"dff7361d-d916-4945-953c-e1ff9f290835"}' localhost:8080/client/exec
 curl -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"command":"restore-client","id":"dff7361d-d916-4945-953c-e1ff9f290835"}' localhost:8080/client/exec
 #+end_src
+* Tests
+=nix build= and =nix build .#housekeeper= run the tests defined in
+[[./housekeeper/housekeeper.cabal]] when building.

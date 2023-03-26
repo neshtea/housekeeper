@@ -21,6 +21,7 @@ import Housekeeper.Context.ClientManager
     MonadClientRepo (..),
     processCommand,
   )
+import Network.Wai.Middleware.Cors (simpleCors)
 import Servant
 
 type GetClients = Get '[JSON] [Client]
@@ -44,7 +45,8 @@ instance FromJSON HandlerCommand where
 type PostCommand = ReqBody '[JSON] HandlerCommand :> Post '[JSON] (Either String (Maybe Client))
 
 type ClientAPI =
-  ("clients" :> GetClients)
+  "api"
+    :> ("clients" :> GetClients)
     :<|> ( "client"
              :> ( Capture "id" UUID :> GetClient
                     :<|> ("exec" :> PostCommand)
@@ -81,4 +83,4 @@ nt env x = liftIO $ runAppM x env
 -- | Given an 'Env', provide the application as an 'Application' that via
 -- 'Network.Wai.Handler.Warp.run'.
 app :: Env -> Application
-app env = serve api $ hoistServer api (nt env) server
+app env = simpleCors $ serve api $ hoistServer api (nt env) server

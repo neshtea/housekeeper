@@ -1,0 +1,33 @@
+{ name = "housekeeper-webclient"
+, packages = ./packages.dhall
+, dependencies =
+  [ "aff"
+  , "affjax"
+  , "affjax-web"
+  , "argonaut-core"
+  , "bifunctors"
+  , "codec-argonaut"
+  , "console"
+  , "datetime"
+  , "debug"
+  , "effect"
+  , "either"
+  , "foldable-traversable"
+  , "formatters"
+  , "halogen"
+  , "halogen-store"
+  , "http-methods"
+  , "lists"
+  , "maybe"
+  , "now"
+  , "prelude"
+  , "remotedata"
+  , "routing-duplex"
+  , "safe-coerce"
+  , "transformers"
+  , "tuples"
+  , "uuidv4"
+  , "web-events"
+  ]
+, sources = [ "src/**/*.purs", "test/**/*.purs" ]
+}

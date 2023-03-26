@@ -34,6 +34,7 @@ library
                     , servant-server
                     , warp
                     , wai-extra
+                    , wai-cors
     hs-source-dirs:  src-lib
     exposed-modules: Housekeeper.Main
                    , Housekeeper.App.Env
@@ -45,8 +46,6 @@ library
                    , Housekeeper.Capability.Time
                    , Housekeeper.Capability.EventStore
     default-extensions: OverloadedStrings
-                      , DerivingStrategies
-                      , DeriveAnyClass
 
 test-suite housekeeper-test
    import: warnings

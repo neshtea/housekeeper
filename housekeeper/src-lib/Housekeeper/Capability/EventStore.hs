@@ -22,7 +22,7 @@ data EventEnvelope a = EventEnvelope
     eventEnvelopeTimestamp :: UTCTime,
     eventEnvelopeEvent :: a
   }
-  deriving stock (Show, Eq)
+  deriving (Show, Eq)
 
 wrapEvent :: (MonadTime m) => UUID -> a -> m (EventEnvelope a)
 wrapEvent top evt = do

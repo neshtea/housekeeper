@@ -1,0 +1,26 @@
+{
+  "name": "purescript-halogen-realworld",
+  "description": "An exemplary real-world application demonstrating PureScript and the Halogen framework",
+  "author": "Thomas Honeyman",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "spago install",
+    "clean": "rm -rf node_modules output .spago dist/*.js *.lock .cache",
+    "build": "spago build",
+    "test": "spago test",
+    "serve": "spago build && esbuild --bundle index.js --servedir=dist",
+    "bundle": "spago -x spago.production.dhall build && purs-backend-es bundle-app --main Main --minify --no-build --to dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomashoneyman/purescript-halogen-realworld.git"
+  },
+  "dependencies": {
+    "decimal.js": "^10.3.1",
+    "marked": "^4.0.15"
+  },
+  "devDependencies": {
+    "esbuild": "^0.14.38",
+    "purs-backend-es": "^1.1.0"
+  }
+}
